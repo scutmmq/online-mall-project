@@ -35,7 +35,37 @@ Project/
    ```bash
    mvn clean install
    ```
-2. 启动服务：
+2. 配置相关参数
+```yml
+spring:
+  aop:
+    proxy-target-class: true
+  application:
+    name: online-mall-application
+  datasource:
+    url: jdbc:mysql://localhost:3306/online_mall
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: your mysql username
+    password: your password
+ data:
+    redis:
+      host: localhost
+      port: 6379
+      lettuce:
+        pool:
+          max-active: 10
+          max-idle: 10
+          min-idle: 1
+          time-between-eviction-runs: 10s
+      database: 1
+```
+3. 设置你的OSS环境变量
+```bash
+export OSS_ACCESS_KEY_ID=yourId
+export OSS_ACCESS_KEY_SECRET=yourSecret
+```
+
+4. 启动服务：
    ```bash
    mvn spring-boot:run
    ```
@@ -69,3 +99,7 @@ Project/
 5. 提交 Pull Request。
 
 ---
+
+## 开发人员
+
+- Mingqin MO
