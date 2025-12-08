@@ -5,6 +5,7 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.scutmmq.anno.LogAnnotation;
 import com.scutmmq.dto.LoginDTO;
 import com.scutmmq.dto.PasswordDTO;
 import com.scutmmq.dto.UserDTO;

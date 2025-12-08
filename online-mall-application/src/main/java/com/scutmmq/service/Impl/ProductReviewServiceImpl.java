@@ -2,9 +2,11 @@ package com.scutmmq.service.Impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.scutmmq.anno.LogAnnotation;
 import com.scutmmq.dto.MerchantReplyDTO;
 import com.scutmmq.dto.ProductReviewDTO;
 import com.scutmmq.entity.*;
+import com.scutmmq.enums.OperationType;
 import com.scutmmq.enums.OrderStatus;
 import com.scutmmq.exception.BusinessException;
 import com.scutmmq.mapper.*;
@@ -32,6 +34,7 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 @Transactional(rollbackFor = Exception.class)
+@LogAnnotation(module = "商品评论管理")
 public class ProductReviewServiceImpl extends ServiceImpl<ProductReviewMapper, ProductReview> implements ProductReviewService {
 
     private final NotificationService notificationService;
@@ -49,6 +52,7 @@ public class ProductReviewServiceImpl extends ServiceImpl<ProductReviewMapper, P
     private final MerchantUserMapper merchantUserMapper;
     
     @Override
+    @LogAnnotation(type = OperationType.INSERT,description = "添加商品评论")
     public Result addReview(ProductReviewDTO reviewDTO) {
 
         final boolean exists = lambdaQuery().eq(ProductReview::getOrderItemId, reviewDTO.getOrderItemId()).exists();
@@ -125,18 +129,21 @@ public class ProductReviewServiceImpl extends ServiceImpl<ProductReviewMapper, P
     }
     
     @Override
+    @LogAnnotation(type = OperationType.SELECT,description = "查询用户评价")
     public Result getReviewsByUserId(Long userId) {
         List<ProductReviewVO> reviews = baseMapper.getReviewsByUserId(userId);
         return Result.success(reviews);
     }
 
     @Override
+    @LogAnnotation(type = OperationType.SELECT,description = "查询商品评价")
     public Result getReviewsByProductId(Long productId) {
         List<ProductReviewVO> reviews = baseMapper.getReviewsByProductId(productId);
         return Result.success(reviews);
     }
 
     @Override
+    @LogAnnotation(type = OperationType.SELECT,description = "查询商家评价")
     public Result getReviewsByMerchantId() {
         Long userId = UserHolder.getUser().getId();
         Long merchantId = merchantUserMapper.getMerchantIdByUserId(userId);
@@ -145,6 +152,7 @@ public class ProductReviewServiceImpl extends ServiceImpl<ProductReviewMapper, P
     }
     
     @Override
+    @LogAnnotation(type = OperationType.UPDATE,description = "回复用户评价")
     public Result replyToReview(MerchantReplyDTO replyDTO) {
         // 获取当前商家ID
         Long userId = UserHolder.getUser().getId();

@@ -81,9 +81,14 @@ public class UserAddressController {
         return userAddressService.defaultAddress(addressId);
     }
 
+    /**
+     * 根据Id查询地址
+     * @param addressId 地址id
+     * @return  地址
+     */
     @GetMapping("/address/{addressId}")
     public Result getAddressById(@PathVariable(value = "addressId")Long addressId){
-        return Result.success(userAddressService.getById(addressId));
+        return userAddressService.getAddressById(addressId);
     }
 
 }

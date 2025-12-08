@@ -1,7 +1,9 @@
 package com.scutmmq.service.Impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.scutmmq.anno.LogAnnotation;
 import com.scutmmq.dto.CartsDTO;
+import com.scutmmq.enums.OperationType;
 import com.scutmmq.vo.CartsItemsVO;
 import com.scutmmq.entity.Carts;
 import com.scutmmq.entity.CartsItems;
@@ -19,6 +21,7 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@LogAnnotation(module = "购物车管理")
 public class CartServiceImpl extends ServiceImpl<CartMapper, Carts> implements CartService {
 
     private final CartMapper cartMapper;
@@ -26,6 +29,7 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Carts> implements C
     private final CartItemsService cartItemsService;
 
     @Override
+    @LogAnnotation(type = OperationType.SELECT,description = "查询购物车信息")
     public Result getCarts() {
         Long userId = UserHolder.getUser().getId();
         CartsItemsVO cartsItemsVO = cartMapper.getCarts(userId);
@@ -33,6 +37,7 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Carts> implements C
     }
 
     @Override
+    @LogAnnotation(type = OperationType.INSERT,description = "添加购物车")
     public Result addItem(CartsDTO cartsDTO) {
 
         Long userId = UserHolder.getUser().getId();
@@ -78,6 +83,7 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Carts> implements C
     }
 
     @Override
+    @LogAnnotation(type = OperationType.UPDATE,description = "更新购物车")
     public Result updateCartItem(CartsDTO cartsDTO) {
         final boolean updated = cartItemsService
                 .lambdaUpdate()

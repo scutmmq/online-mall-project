@@ -5,9 +5,11 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.scutmmq.anno.LogAnnotation;
 import com.scutmmq.dto.InventoryDTO;
 import com.scutmmq.entity.*;
 import com.scutmmq.enums.ChangeType;
+import com.scutmmq.enums.OperationType;
 import com.scutmmq.exception.BusinessException;
 import com.scutmmq.mapper.MerchantMapper;
 import com.scutmmq.service.InventoryLogService;
@@ -35,6 +37,7 @@ import static com.scutmmq.utils.RedisConstants.*;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional(rollbackFor = Exception.class)
+@LogAnnotation(module = "商品管理")
 public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> implements ProductService  {
 
     private final  StringRedisTemplate stringRedisTemplate;
@@ -48,6 +51,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     private final RedisUtils redisUtils;
 
     @Override
+    @LogAnnotation(type = OperationType.SELECT,description = "获取商品列表")
     public Result getProducts(Long categoryId, Long merchantId, String keyword, Integer minPrice, Integer maxPrice, Integer isActive, Integer page, Integer pageSize) {
 
         PageHelper.startPage(page,pageSize);
@@ -66,6 +70,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
      * @return productDetail
      */
     @Override
+    @LogAnnotation(type = OperationType.SELECT,description = "获取商品详细信息")
     public Result getProductDetail(Long productId) {
         final String jsonProduct = stringRedisTemplate.opsForValue().get(CACHE_PRODUCT_DETAIL + productId);
 
@@ -98,6 +103,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
      * @return null
      */
     @Override
+    @LogAnnotation(type = OperationType.INSERT,description = "添加商品")
     public Result addProduct(Product product) {
         // 获取用户id
         Long userId = UserHolder.getUser().getId();
@@ -145,6 +151,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
      * @return
      */
     @Override
+    @LogAnnotation(type = OperationType.UPDATE,description = "更新商品")
     public Result updateProducts(Product product) {
         // 获取用户id
         Long userId = UserHolder.getUser().getId();
@@ -174,6 +181,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     }
 
     @Override
+    @LogAnnotation(type = OperationType.SELECT,description = "获取商家商品")
     public Result getProductsOfMe() {
         // 获取用户id
         Long userId = UserHolder.getUser().getId();
@@ -190,6 +198,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogAnnotation(type = OperationType.UPDATE,description = "更新商品库存")
     public Result modifyStockQuantity(InventoryDTO inventoryDTO) {
         // 获取商品
         final Product product = getById(inventoryDTO.getProductId());

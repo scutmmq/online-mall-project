@@ -1,5 +1,6 @@
 package com.scutmmq.service.Impl;
 
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -9,20 +10,25 @@ import com.scutmmq.entity.User;
 import com.scutmmq.entity.UserAddress;
 import com.scutmmq.mapper.UserAddressMapper;
 import com.scutmmq.service.UserAddressService;
+import com.scutmmq.utils.RedisConstants;
 import com.scutmmq.utils.UserHolder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Transactional(rollbackFor = Exception.class)
+@Slf4j
 public class UserAddressServiceImpl extends ServiceImpl<UserAddressMapper, UserAddress>  implements UserAddressService {
 
     private final UserAddressMapper userAddressMapper;
+
+    private final StringRedisTemplate redisTemplate;
 
     @Override
     public Result getAddress() {
@@ -72,6 +78,7 @@ public class UserAddressServiceImpl extends ServiceImpl<UserAddressMapper, UserA
         if(!update){
             return Result.success("修改失败，请联系管理员");
         }
+        redisTemplate.delete(RedisConstants.CACHE_ADDRESS_KEY + address.getId());
 
         return Result.success();
 
@@ -87,6 +94,25 @@ public class UserAddressServiceImpl extends ServiceImpl<UserAddressMapper, UserA
         // 更新默认地址
         lambdaUpdate().set(UserAddress::getIsDefault,1).eq(UserAddress::getId,addressId).update();
 
+        redisTemplate.delete(RedisConstants.CACHE_ADDRESS_KEY + addressId);
+
         return  Result.success();
+    }
+
+    @Override
+    public Result getAddressById(Long addressId) {
+        final String jsonAddress = redisTemplate.opsForValue().get(RedisConstants.CACHE_ADDRESS_KEY + addressId);
+        if(jsonAddress!=null){
+            log.info("地址缓存命中 ");
+            return Result.success(JSONUtil.toBean(jsonAddress,UserAddress.class));
+        }
+        log.info("地址缓存未命中");
+        final UserAddress address = getById(addressId);
+
+        if(address!=null){
+            // 写入缓存
+            redisTemplate.opsForValue().set(RedisConstants.CACHE_ADDRESS_KEY + addressId,JSONUtil.toJsonStr(address));
+        }
+        return Result.success(address);
     }
 }

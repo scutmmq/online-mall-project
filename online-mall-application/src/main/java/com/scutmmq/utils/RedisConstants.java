@@ -38,4 +38,5 @@ public class RedisConstants {
     // 通知（Redis Stream 前缀）
     public static final String NOTIFY_USER_STREAM_PREFIX = "notify:user:";
     public static final String NOTIFY_MERCHANT_STREAM_PREFIX = "notify:merchant:";
+    public static final String CACHE_ADDRESS_KEY = "cache:address:";
 }

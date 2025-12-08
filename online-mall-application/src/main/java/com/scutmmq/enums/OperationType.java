@@ -8,12 +8,12 @@ import lombok.Getter;
 @Getter
 public enum OperationType {
 
-    INSERT(0,"增加"),
-    DELETE(1,"删除"),
-    MODIFY(2,"修改");
-
+    INSERT("增加"),
+    DELETE("删除"),
+    UPDATE("修改"),
+    SELECT("查询"),
+    NONE("未知");
 
     @EnumValue
-    private final int value;
-    private final String desc;
+    private final String value;
 }

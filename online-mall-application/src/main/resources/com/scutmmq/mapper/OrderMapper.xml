@@ -35,6 +35,23 @@
         <if test="status!=null and status!=''">and o.status = #{status}</if>
         order by ordered_time desc
     </select>
+    
+    <select id="getMerchantOrdersWithPagination" resultMap="MerchantOrdersResultMap">
+        select
+        distinct o.id,o.order_number,o.total_amount,o.status,o.payment_status,o.ordered_time,
+        o.billing_address_id as billing_address_id,o.shipping_address_id as shipping_address_id,
+        o.shipped_time as shipped_time,o.delivered_time as deliver_time,
+        o.shipping_method as ship_type,o.tracking_number as tracking_number,o.remark,
+        oi.product_id,oi.product_name,oi.product_price,oi.quantity,p.image_url,oi.id,
+        u.nick_name as nick_name , u.image as image
+        from orders o
+        join order_items oi on o.id = oi.order_id
+        join product p on oi.product_id = p.id
+        join user u on o.user_id = u.id
+        where o.merchant_id = #{merchantId}
+        <if test="status!=null and status!=''">and o.status = #{status}</if>
+        order by ordered_time desc
+    </select>
 
     <resultMap id="MerchantOrdersResultMap" type="com.scutmmq.vo.MerchantOrdersVO">
         <id column="id" property="id"/>

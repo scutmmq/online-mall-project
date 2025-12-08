@@ -4,12 +4,10 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.scutmmq.anno.LogAnnotation;
 import com.scutmmq.dto.*;
 import com.scutmmq.entity.*;
-import com.scutmmq.enums.AuditStatus;
-import com.scutmmq.enums.ChangeType;
-import com.scutmmq.enums.OrderStatus;
-import com.scutmmq.enums.PaymentStatus;
+import com.scutmmq.enums.*;
 import com.scutmmq.exception.BusinessException;
 import com.scutmmq.mapper.*;
 import com.scutmmq.service.OrderItemsService;
@@ -45,6 +43,7 @@ import static com.scutmmq.utils.RedisConstants.*;
 @RequiredArgsConstructor
 @Transactional(rollbackFor = Exception.class)
 @Slf4j
+@LogAnnotation(module = "订单管理")
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implements OrderService{
 
     private final OrderItemsService orderItemsService;
@@ -75,6 +74,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
 
     private final MerchantMapper merchantMapper;
     @Override
+    @LogAnnotation(type = OperationType.INSERT,description = "添加订单")
     public Result addOrder(OrdersDTO ordersDTO) {
         // 1.获取用户信息
         Long userId = UserHolder.getUser().getId();
@@ -230,6 +230,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
     }
 
     @Override
+    @LogAnnotation(type = OperationType.SELECT,description = "查询用户订单")
     public Result getUserOrders(String status) {
 
         Long userId = UserHolder.getUser().getId();
@@ -241,6 +242,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
     }
 
     @Override
+    @LogAnnotation(type = OperationType.UPDATE,description = "确认收货")
     public Result confirmOrder(Long orderId) {
         final Orders order = getById(orderId);
         if(order.getStatus()==OrderStatus.SHIPPED){
@@ -264,6 +266,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
     }
 
     @Override
+    @LogAnnotation(type = OperationType.UPDATE,description = "发货")
     public Result ship(ShipDTO shipDTO) {
 
         // 生成物流流水号
@@ -290,6 +293,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
     }
 
     @Override
+    @LogAnnotation(type = OperationType.SELECT,description = "查询商家订单")
     public Result getMerchantOrder(String status) {
 
         Long userId = UserHolder.getUser().getId();
@@ -297,13 +301,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         // 获取本人商家id
         Long merchantId = merchantUserMapper.getMerchantIdByUserId(userId);
 
-        List<MerchantOrdersVO> userOrdersVOList = orderMapper.getMerchantOrders(status,merchantId);
+
+        List<MerchantOrdersVO> userOrdersVOList = orderMapper.getMerchantOrdersWithPagination(status, merchantId);
 
 
         return Result.success(userOrdersVOList);
     }
 
     @Override
+    @LogAnnotation(type = OperationType.UPDATE,description = "取消订单")
     public Result cancelOrder(ReturnApplyDTO dto) {
 
         Long orderId = dto.getOrderId();
@@ -392,6 +398,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
     }
 
     @Override
+    @LogAnnotation(type = OperationType.UPDATE,description = "处理退货")
     public Result approveReturn(ApproveReturnDTO dto) {
         // 1.校验审核记录
         final ReturnAudit audit = auditService.getById(dto.getAuditId());
@@ -452,6 +459,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
 
 
     @Override
+    @LogAnnotation(type = OperationType.UPDATE,description = "拒绝退货")
     public Result rejectReturn(RejectReturnDTO dto) {
 
         // 1.校验审核记录
