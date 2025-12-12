@@ -86,11 +86,6 @@ export OSS_ACCESS_KEY_SECRET=yourSecret
 
 ---
 
-## 技术栈
-
-- **后端**：Java, Spring Boot, Maven, MySQL, Redis
-- **前端**：Vue 3, Vite, Element Plus, Nginx
-
 ---
 
 ## 贡献指南
