@@ -9,7 +9,7 @@ Online Mall 是一个包含前后端的前后端分离在线商城项目，旨�
 
 - **后端项目**：`online-mall-application`，基于 Java 和 Spring Boot 构建。
 - **前端项目**：`online-mall-vue`，基于 Vue 3 和 Vite 构建。
-- **技术栈**: Spring Boot maven Mybatis-plus MySQL Redis SpringAOP Vue3 WebSocket 
+- **技术栈**: `Spring Boot` `Maven` `Mybatis-plus` `MySQL` `Redis` `SpringAOP` `SpringJWT` `Vue3` `WebSocket` 
 ---
 
 ## 项目结构
